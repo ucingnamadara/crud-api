@@ -1,5 +1,7 @@
 package id.kawahedukasi.controller;
 
+import io.vertx.core.json.JsonObject;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
@@ -9,17 +11,59 @@ import java.util.Map;
 public class UserController {
 
     @POST
-    public Map<String, Object> create(){
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Map<String, Object> create(JsonObject request){
+//        String name = (String) request.get("name");
+//        String gender = (String) request.get("gender");
+
         return Map.of(
-                "message", "CREATED"
+                "data", request
         );
     }
 
     @GET
-    public Map<String, Object> get(){
+    public Map<String, Object> getByNameGenderPob(
+            @QueryParam("name") String name,
+            @QueryParam("gender") String gender,
+            @QueryParam("pob") String pob
+    ){
         return Map.of(
-                "nama", "ananda",
-                "gender", "male"
+                "id" , -99,
+                "nama", name,
+                "gender", gender,
+                "pob", pob
+        );
+    }
+
+    @GET
+    @Path("/{id}")
+    public Map<String, Object> get(@PathParam("id") Integer id){
+        if(id == 1){
+            return Map.of(
+                    "id" , "1",
+                    "nama", "ananda",
+                    "gender", "male"
+            );
+        } else if (id == 2) {
+            return Map.of(
+                    "id" , "2",
+                    "nama", "ninis",
+                    "gender", "female"
+            );
+        } else{
+            return Map.of(
+                    "message", "unknown_id"
+            );
+        }
+    }
+
+    @GET
+    @Path("/name/{name}")
+    public Map<String, Object> getByName(@PathParam("name") String name){
+        return Map.of(
+                "id" , -99,
+                "nama", name,
+                "gender", ""
         );
     }
 
