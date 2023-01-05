@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/peserta")
+@Path("/hello")
 @Produces(MediaType.TEXT_PLAIN)
 public class GreetingResource {
 
