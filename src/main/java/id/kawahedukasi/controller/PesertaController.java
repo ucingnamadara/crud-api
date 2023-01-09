@@ -2,11 +2,16 @@ package id.kawahedukasi.controller;
 
 import id.kawahedukasi.model.Peserta;
 import id.kawahedukasi.model.RekapTugas;
+import id.kawahedukasi.service.PesertaService;
+import id.kawahedukasi.service.ReportService;
 import io.vertx.core.json.JsonObject;
+import net.sf.jasperreports.engine.JRException;
 
+import javax.inject.Inject;
 import javax.swing.text.DateFormatter;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -14,22 +19,30 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Path("/peserta")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class PesertaController {
 
+    @Inject
+    PesertaService pesertaService;
+
+    @Inject
+    ReportService reportService;
+
+//    public PesertaController(){
+//        pesertaService = new PesertaService();
+//    }
+
+    @GET
+    @Path("/report")
+    @Produces("application/pdf")
+    public Response create() throws JRException {
+        return reportService.exportJasper();
+    }
+
     @POST
-    @Transactional
     public Response create(JsonObject request){
-        Peserta peserta = new Peserta();
-        peserta.name = request.getString("name");
-        peserta.role = request.getString("role");
-        peserta.pob = request.getString("pob");
-        peserta.batch = request.getInteger("batch");
-        peserta.dob = LocalDate.parse(request.getString("dob"), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-        //save
-        peserta.persist();
-
-        return Response.ok().entity(new HashMap<>()).build();
+        return pesertaService.create(request);
     }
 
     //rekap tugas peserta id
