@@ -2,18 +2,20 @@ package id.kawahedukasi.controller;
 
 import id.kawahedukasi.model.Peserta;
 import id.kawahedukasi.model.RekapTugas;
+import id.kawahedukasi.model.dto.UploadPesertaRequest;
 import id.kawahedukasi.service.PesertaService;
 import id.kawahedukasi.service.ReportService;
+import id.kawahedukasi.service.ExcelService;
 import io.vertx.core.json.JsonObject;
 import net.sf.jasperreports.engine.JRException;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import javax.inject.Inject;
-import javax.swing.text.DateFormatter;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -29,6 +31,9 @@ public class PesertaController {
     @Inject
     ReportService reportService;
 
+    @Inject
+    ExcelService excelService;
+
 //    public PesertaController(){
 //        pesertaService = new PesertaService();
 //    }
@@ -40,9 +45,19 @@ public class PesertaController {
         return reportService.exportJasper();
     }
 
+
     @POST
-    public Response create(JsonObject request){
-        return pesertaService.create(request);
+    @Path("/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response upload(@MultipartForm UploadPesertaRequest request) throws IOException {
+        return excelService.upload(request);
+    }
+
+    @GET
+    @Path("/download")
+    @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    public Response download() throws IOException {
+        return excelService.download();
     }
 
     //rekap tugas peserta id
